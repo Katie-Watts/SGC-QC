@@ -1,9 +1,9 @@
-# Usage: Rscript gwas_pipeline.R manifest.tsv outdir
+# Usage: Rscript gwas_pipeline.R path_list.tsv outdir
 library(MungeSumstats)
 library(data.table)
 
 args       <- commandArgs(trailingOnly = TRUE)
-manifest_f <- args[1]      # one GWAS path per line
+path_list_f <- args[1]      # one GWAS path per line
 outdir     <- args[2]
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
@@ -12,7 +12,7 @@ BiocManager::install("BSgenome.Hsapiens.NCBI.GRCh38")
 BiocManager::install("SNPlocs.Hsapiens.dbSNP144.GRCh37")
 BiocManager::install("BSgenome.Hsapiens.1000genomes.hs37d5")
 
-paths <- data.table::fread(manifest_f, header = FALSE)[[1]]
+paths <- data.table::fread(path_list_f, header = FALSE)[[1]]
 
 results <- lapply(seq_along(paths), function(i) {
   gwas_path <- paths[i]
