@@ -2,9 +2,9 @@
 library(MungeSumstats)
 library(data.table)
 
-args       <- commandArgs(trailingOnly = TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 path_list_f <- args[1]      # one GWAS path per line
-outdir     <- args[2]
+outdir <- args[2]
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
 BiocManager::install("SNPlocs.Hsapiens.dbSNP144.GRCh38")
@@ -16,10 +16,8 @@ paths <- data.table::fread(path_list_f, header = FALSE)[[1]]
 
 results <- lapply(seq_along(paths), function(i) {
   gwas_path <- paths[i]
-  out_f     <- file.path(outdir,
-                         paste0(tools::file_path_sans_ext(basename(gwas_path),
-                                                          compression = TRUE),
-                                "_munged.tsv.gz"))
+  out_f <- file.path(outdir,paste0(tools::file_path_sans_ext(basename(gwas_path),
+                     compression = TRUE), "_munged.tsv.gz"))
   message("[", i, "/", length(paths), "] ", gwas_path)
 
  tryCatch({
@@ -35,6 +33,15 @@ results <- lapply(seq_along(paths), function(i) {
       log_mungesumstats_msgs = TRUE,
       force_new              = TRUE
     )
+   
+#add CHR:POS(GRCh38):EFFECT:OTHER as first column
+  munged_f <- if (is.list(res)) res$sumstats else res
+  dt <- data.table::fread(munged_f)
+  dt[, SNP_ID := paste(CHR, BP, A2, A1, sep = ":")] # A2 = effect, A1 = other
+  data.table::setcolorder(dt, c("SNP_ID", setdiff(names(dt), "SNP_ID")))
+  data.table::fwrite(dt, munged_f, sep = "\t", compress = "gzip")
+   
+    res
   }, error = function(e) {
     message("FAILED: ", gwas_path, " -- ", conditionMessage(e))
     NULL
