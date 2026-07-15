@@ -7,9 +7,9 @@ path_list_f <- args[1]      # one GWAS path per line
 outdir <- args[2]
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
-BiocManager::install("SNPlocs.Hsapiens.dbSNP144.GRCh38")
+BiocManager::install("SNPlocs.Hsapiens.dbSNP155.GRCh38")
 BiocManager::install("BSgenome.Hsapiens.NCBI.GRCh38")
-BiocManager::install("SNPlocs.Hsapiens.dbSNP144.GRCh37")
+BiocManager::install("SNPlocs.Hsapiens.dbSNP155.GRCh37")
 BiocManager::install("BSgenome.Hsapiens.1000genomes.hs37d5")
 
 paths <- data.table::fread(path_list_f, header = FALSE)[[1]]
