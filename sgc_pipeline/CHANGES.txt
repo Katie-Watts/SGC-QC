@@ -1,9 +1,6 @@
-CHANGES.txt — how these scripts differ from the originals you first uploaded
+CHANGES.txt — how these scripts differ from the original pipeline (Sep 2026)
 ============================================================================
-Read this when comparing the pipeline against earlier versions. Only
-ONE change alters pipeline numbers (verbose_summary.sh, flagged ***); the rest
-are new scripts or added capability with the same core behaviour.
-
+Read this when comparing the pipeline against earlier versions. 
 
 NEW SCRIPTS (did not exist previously)
 ------------------------------------------------
@@ -21,8 +18,6 @@ assemble_workbook.py   collates all tab TSVs into the final .xlsx (plain tab
                        names, blank rsid/AF inserted, catalogue embedded)
 clump_expected_gwsig.py  expected-vs-observed GW-sig per clump (QC flag)
 
-
-*** BEHAVIOUR CHANGE THAT AFFECTS PIPELINE OUTPUT ***
 -----------------------------------------------------
 verbose_summary.sh
   MHC representative selection changed:
@@ -39,7 +34,7 @@ verbose_summary.sh
   heatmap_trait_locus.py, highlights_top_loci.py, count_unique_clumps.py) still
   collapse the MHC by their own most-common-index/lowest-p rule, so the MHC
   representative VARIANT can differ between those tabs and Clump_index_variants.
-  Counts remain correct everywhere. Ask if you want them all aligned.
+  Counts remain correct everywhere.
 
 
 ADDED CAPABILITY (same core behaviour, more options)
@@ -53,7 +48,7 @@ known_loci_recovery.py    reworked substantially: exact vs window modes,
                           breakdown, multiple p-value threshold columns
 
 
-UNCHANGED (runbook calls them as-is)
+UNCHANGED
 ------------------------------------------------------
 clump_verbose_only.sh   clean_verbose.sh   min_pvalue.R   top_variant.sh
 cross_disease_verbose.py   extract_suggestive.R   analyse_strata.R
@@ -62,15 +57,9 @@ ancestry_lookup.R   ancestry_diff_test.R   count_unique_clumps.py
 plot_unique_clumps.py   highlights_top_loci.py   gwas_plots.R
 add_meta_metrics.py   add_n_cohort.py   extract_variant.py
 harmonize_bim.R   make_keep_list.R
-  (For any script that appeared in several upload batches, the bundle uses the
-   LATEST copy from your uploads — if you hand-edited one between batches, the
-   bundle has your latest, not an older version.)
-
 
 REMOVED (obsolete, superseded, or generated elsewhere)
 --------------------------------------------------------------------------
-forest_cohort.py, forest_pleiotropy*.py   — forest plots; you run these on
-                                            different data, so excluded
 top_variant.sh                             — read STANDARD .clumped (this
                                             pipeline makes verbose only);
                                             min-p need is covered by
@@ -98,5 +87,4 @@ extract_chr20.sh                           — one-off data utilities
   NOTE on pick_best_anchor.py: build_cross_disease.py computes the
   direction-difference columns at the locus REPRESENTATIVE variant, not at a
   re-optimised shared anchor. For most loci identical; at complex regions
-  (e.g. MHC) the anchor step was more sensitive. Ask if you want it wired back
-  into the cross stage.
+  (e.g. MHC) the anchor step was more sensitive.
