@@ -1,0 +1,102 @@
+CHANGES.txt — how these scripts differ from the originals you first uploaded
+============================================================================
+Read this when comparing the pipeline against earlier versions. Only
+ONE change alters pipeline numbers (verbose_summary.sh, flagged ***); the rest
+are new scripts or added capability with the same core behaviour.
+
+
+NEW SCRIPTS (did not exist previously)
+------------------------------------------------
+run_pipeline.sh        master runbook: ordered, parameterised, stage-by-stage
+build_overview.py      Overview tab (phenotype x stratum presence grid)
+build_meta_results.py  Meta-Analysis Results tab: lambda / N variants /
+                       n p<=5e-8 computed from sumstats; clump counts joined;
+                       cohorts / cases / controls left blank (external)
+make_clump_index.py    seeds Clump_index_variants from verbose_summary output
+annotate_novelty.py    Novelty / Matched / Details vs the known-loci catalogue,
+                       ancestry-aware (used for Clump, Sex, Ancestry tabs)
+build_cross_disease.py full Cross-disease sheet: loci + novelty rollup +
+                       direction-difference (ALL-stratum betas)
+assemble_workbook.py   collates all tab TSVs into the final .xlsx (plain tab
+                       names, blank rsid/AF inserted, catalogue embedded)
+clump_expected_gwsig.py  expected-vs-observed GW-sig per clump (QC flag)
+
+
+*** BEHAVIOUR CHANGE THAT AFFECTS PIPELINE OUTPUT ***
+-----------------------------------------------------
+verbose_summary.sh
+  MHC representative selection changed:
+    OLD  keep the MHC clump with the MOST GW-sig variants (tie -> strongest p)
+    NEW  keep the MHC clump with the MOST SIGNIFICANT index SNP (lowest index
+         p; tie -> richer clump)
+  Effect: the single variant shown as the MHC representative on the
+  Clump_index_variants tab may change (now the strongest-p MHC lead, matching
+  the old index_snps.sh behaviour you asked to restore). Locus COUNTS are
+  unaffected (MHC is one locus either way); only which variant id represents
+  it changes. n_gwsig_in_clump reported is that chosen clump's own count.
+
+  NOTE: the Python locus-builders (cross_disease_verbose.py,
+  heatmap_trait_locus.py, highlights_top_loci.py, count_unique_clumps.py) still
+  collapse the MHC by their own most-common-index/lowest-p rule, so the MHC
+  representative VARIANT can differ between those tabs and Clump_index_variants.
+  Counts remain correct everywhere. Ask if you want them all aligned.
+
+
+ADDED CAPABILITY (same core behaviour, more options)
+----------------------------------------------------
+heatmap_trait_locus.py    added: hierarchical clustering (default on), grey =
+                          non-significant, x-axis labels, cell gridlines
+plot_pheno_distribution.py added: --min-gwsig filter (the >=5 option) and a
+                          caption panel for annotation bullets
+known_loci_recovery.py    reworked substantially: exact vs window modes,
+                          across-strata matching, ancestry-aware per-stratum
+                          breakdown, multiple p-value threshold columns
+
+
+UNCHANGED (runbook calls them as-is)
+------------------------------------------------------
+clump_verbose_only.sh   clean_verbose.sh   min_pvalue.R   top_variant.sh
+cross_disease_verbose.py   extract_suggestive.R   analyse_strata.R
+remove_mhc.R   prune_250kb.R   sex_lookup.R   sex_diff_test.R
+ancestry_lookup.R   ancestry_diff_test.R   count_unique_clumps.py
+plot_unique_clumps.py   highlights_top_loci.py   gwas_plots.R
+add_meta_metrics.py   add_n_cohort.py   extract_variant.py
+harmonize_bim.R   make_keep_list.R
+  (For any script that appeared in several upload batches, the bundle uses the
+   LATEST copy from your uploads — if you hand-edited one between batches, the
+   bundle has your latest, not an older version.)
+
+
+REMOVED (obsolete, superseded, or generated elsewhere)
+--------------------------------------------------------------------------
+forest_cohort.py, forest_pleiotropy*.py   — forest plots; you run these on
+                                            different data, so excluded
+top_variant.sh                             — read STANDARD .clumped (this
+                                            pipeline makes verbose only);
+                                            min-p need is covered by
+                                            min_pvalue.R. Dropping it also drops
+                                            the GWAS_min_GW_P tab (incl/excl-MHC
+                                            min-p); GWAS Minimum p_ALL remains.
+clump_batch.sh, clump_batch_verbose.sh, clump_summary.sh, clump_count.sh,
+clump_suggestive.sh                        — superseded by clump_verbose_only.sh
+                                            + verbose_summary.sh
+move_verbose.sh                            — folded into the clean stage
+annotate_variants.sh, annotate_variants3.sh, annotate_cross.sh,
+annotate_sex.sh, annotate_pav.sh           — replaced by verbose_summary.sh's
+                                            n_gwsig column + annotate_novelty.py
+cross_phenotype.R, prune_cross_phenotype.R — earlier R route to cross-disease
+rebuild_component_leads.py, pick_best_anchor.py, extract_cross_disease_betas.py,
+extract_locus_lead_betas.py                — discordance/anchor helpers not in
+                                            the main flow (see note below)
+compare_clump_counts.py, crossref_qc.py, lookup_sumstat_pvalues.py
+                                           — standalone QC/lookup utilities
+plot_novelty_loci.py, plot_novel_bar.py    — earlier novelty plots
+rename_headers.py, rsid_to_hg38.py, ref_panel.R, sort_gwas.sh, index_snps.sh,
+extract_chr20.sh                           — one-off data utilities
+  All of these remain in your uploads if you ever want one back.
+
+  NOTE on pick_best_anchor.py: build_cross_disease.py computes the
+  direction-difference columns at the locus REPRESENTATIVE variant, not at a
+  re-optimised shared anchor. For most loci identical; at complex regions
+  (e.g. MHC) the anchor step was more sensitive. Ask if you want it wired back
+  into the cross stage.
